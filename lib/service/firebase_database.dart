@@ -15,8 +15,10 @@ class FireBaseService{
     List<UserModel> users = [];
     var data = await reference.get();
     List<DataSnapshot> snapshotdata = data.children.toList();
+    print("printing  snapshotdata data ${snapshotdata.toString()}");
     for(var user in snapshotdata){
       users.add(UserModel.fromSnapshot(user));
+      print("printing  snapshotdata data ${user.value}");
     }
     return users;
   }
