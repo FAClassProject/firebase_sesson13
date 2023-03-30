@@ -1,10 +1,10 @@
-import 'package:firebase_core/firebase_core.dart';
+
 import 'package:firebase_sesson13/model/user_model.dart';
 import 'package:firebase_sesson13/service/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import 'package:uuid/uuid_util.dart';
+
 
 class FirebaseView extends StatefulWidget {
   const FirebaseView({Key? key}) : super(key: key);
@@ -19,6 +19,7 @@ class _FirebaseViewState extends State<FirebaseView> {
   final TextEditingController _nameTextEditingController = TextEditingController();
   final TextEditingController _emailTextEditingController = TextEditingController();
   final TextEditingController _ageTextEditingController = TextEditingController();
+
 
   @override
   void initState() {
@@ -97,33 +98,49 @@ class _FirebaseViewState extends State<FirebaseView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Firebase demo'),),
-      body: FutureBuilder(
-        future: dbService.getUsers(),
-          builder: (context, snapshot){
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return Center(child:  CircularProgressIndicator(),);
-          }
-          if(snapshot.hasData){
-            if(snapshot.data!.isEmpty){
-              return Center(child: Text("No Data Found"));
-            }
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  var userData = snapshot.data![index];
-                  return Card(
-                    color: Colors.yellow[200],
-                    child: ListTile(
-                        title: Text("${userData.name } ${userData.age}"),
-                         subtitle: Text("${userData.email }"),
-                    ),
-                  );
+      appBar: AppBar(
+        actions: [IconButton(onPressed: ()async{
 
-                });
-          }
-          return Center(child: Text("No Data Found"),);
-          }),
+        }, icon: Icon(Icons.logout))],
+        title: Text('Firebase demo'),),
+      
+      body: Column(
+        children: [
+          Text(dbService.auth.currentUser!.displayName.toString()),
+          Text(dbService.auth.currentUser!.email.toString()),
+
+          SizedBox(height: 20,),
+          Container(
+            height: 400,
+            child: FutureBuilder(
+                future: dbService.getUsers(),
+                builder: (context, snapshot){
+                  if(snapshot.connectionState == ConnectionState.waiting){
+                    return Center(child:  CircularProgressIndicator(),);
+                  }
+                  if(snapshot.hasData){
+                    if(snapshot.data!.isEmpty){
+                      return Center(child: Text("No Data Found"));
+                    }
+                    return ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          var userData = snapshot.data![index];
+                          return Card(
+                            color: Colors.yellow[200],
+                            child: ListTile(
+                              title: Text("${userData.name} ${userData.age}"),
+                              subtitle: Text("${userData.email }"),
+                            ),
+                          );
+
+                        });
+                  }
+                  return Center(child: Text("No Data Found"),);
+                }),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
           onPressed: (){

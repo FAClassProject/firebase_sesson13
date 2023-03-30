@@ -1,15 +1,28 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_sesson13/service/firebase_database.dart';
 import 'package:firebase_sesson13/view/firebase_view.dart';
+import 'package:firebase_sesson13/view/login_view.dart';
+import 'package:firebase_sesson13/view/register.dart';
 import 'package:flutter/material.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+
+  //check if the user is logged in or not
+  FireBaseService().auth.authStateChanges().listen((event) {
+    if(event == null){
+      runApp(const MyApp(isLoggedIn: false));
+    }else{
+      runApp(const MyApp(isLoggedIn: true));
+    }
+  });
+
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+  const MyApp({super.key, required this.isLoggedIn});
 
   // This widget is the root of your application.
   @override
@@ -19,7 +32,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: FirebaseView(),
+      home: isLoggedIn ? const FirebaseView() : const Login(),
     );
   }
 }
